@@ -1,0 +1,17 @@
+---
+- name: install java
+  apt: name=openjdk-7-jdk update_cache=yes state=latest install_recommends=no
+- name: ensure {{service_name}} group exists
+  group: name={{service_name}} state=present system=yes
+- name: ensure {{service_name}} user exists
+  user: name={{service_name}} group={{service_name}} createhome=no shell=/bin/false system=yes state=present
+- name: copy the webapp
+  copy: src={{ src_jar }} dest={{ app_jar }}
+- name: copy the config
+  copy: src={{ src_config }} dest={{ app_config_filepath }}
+- name: copy init script
+  template: src=dropwizard.conf.j2 dest=/etc/init/{{service_name}}.conf mode=0644
+  notify:
+  - restart {{service_name}}
+- name: start {{ service_name }}
+  service: name={{service_name}} state=started enabled=yes

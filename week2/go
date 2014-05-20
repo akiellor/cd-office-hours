@@ -1,0 +1,19 @@
+#!/bin/sh
+
+set -e
+
+APP_DIR=/tmp/dropwizard-helloworld
+SRC_JAR=$APP_DIR/target/dropwizard-helloworld-0.0.1-SNAPSHOT.jar
+SRC_CONFIG=$APP_DIR/config/dev_config.yml
+
+if [[ ! -d $APP_DIR ]]; then
+  git clone https://github.com/sullis/dropwizard-helloworld $APP_DIR
+fi
+
+pushd $APP_DIR
+mvn clean package
+popd
+
+vagrant up
+
+ansible-playbook -e service_name=helloworld -e src_jar=$SRC_JAR -e src_config=$SRC_CONFIG -vvvv -i inventory --private-key=~/.vagrant.d/insecure_private_key site.yml

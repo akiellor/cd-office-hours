@@ -1,0 +1,10 @@
+---
+- hosts: app-server
+  sudo: True
+  sudo_user: root
+  vars:
+    app_jar: /opt/{{service_name}}.jar
+    app_config_filepath: /opt/{{service_name}}.yaml
+    app_log_path: /var/log/{{service_name}}.log
+  roles:
+    - role: dropwizard
